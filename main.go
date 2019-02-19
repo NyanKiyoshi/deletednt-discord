@@ -14,9 +14,10 @@ import (
 
 // Variables used for command line parameters
 var (
-	Token    string
-	Email    string
-	Password string
+	Token           string
+	Email           string
+	Password        string
+	InvisibleStatus bool
 )
 
 func init() {
@@ -24,6 +25,7 @@ func init() {
 	flag.StringVar(&Token, "token", "", "Bot Token")
 	flag.StringVar(&Email, "email", "", "Account Email")
 	flag.StringVar(&Password, "password", "", "Account Password")
+	flag.BoolVar(&InvisibleStatus, "invisible", false, "Make the bot appear offline")
 
 	flag.Parse()
 
@@ -70,9 +72,15 @@ func main() {
 		log.Panic("error opening connection: ", err.Error())
 	}
 
+	// Make the bot appear invisible if the flag was set
+	if InvisibleStatus {
+		_ = session.UpdateStatusComplex(discordgo.UpdateStatusData{
+			Status: "invisible",
+		})
+	}
+
 	fmt.Printf(
 		"Invite: https://discordapp.com/oauth2/authorize?client_id=%s&scope=bot\n", session.State.User.ID)
-
 	runForever()
 
 	// Cleanly close down the Discord session.

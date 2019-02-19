@@ -59,7 +59,9 @@ func retrieveDeletedAttachment(attachment *discordgo.MessageAttachment) *discord
 	return nil
 }
 
-func processDeletedMessage(session *discordgo.Session, deletedMessage *discordgo.Message) {
+func processDeletedMessage(
+	session *discordgo.Session, deletedMessage *discordgo.Message, outputChannel *discordgo.Channel) {
+
 	filesToSend := make([]*discordgo.File, len(deletedMessage.Attachments))
 	messageToSend := discordgo.MessageSend{
 		Content: fmt.Sprintf(
@@ -72,7 +74,8 @@ func processDeletedMessage(session *discordgo.Session, deletedMessage *discordgo
 		filesToSend[index] = retrieveDeletedAttachment(attachment)
 	}
 
-	if _, err := session.ChannelMessageSendComplex(deletedMessage.ChannelID, &messageToSend); err != nil {
+	if _, err := session.ChannelMessageSendComplex(
+		outputChannel.ID, &messageToSend); err != nil {
 		log.Print("Failed to send back deleted message: ", err)
 	}
 }
