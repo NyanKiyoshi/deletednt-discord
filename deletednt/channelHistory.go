@@ -6,6 +6,7 @@ var messageHistory = map[string]map[string]*discordgo.Message{}
 
 func appendMessageToHistory(session *discordgo.Session, message *discordgo.Message) {
 	session.Lock()
+	defer session.Unlock()
 
 	history, found := messageHistory[message.ChannelID]
 
@@ -15,7 +16,6 @@ func appendMessageToHistory(session *discordgo.Session, message *discordgo.Messa
 	}
 
 	messageHistory[message.ChannelID][message.ID] = message
-	session.Unlock()
 }
 
 func getMessageFromHistory(message *discordgo.Message) *discordgo.Message {
@@ -27,14 +27,13 @@ func getMessageFromHistory(message *discordgo.Message) *discordgo.Message {
 
 func popMessageFromHistory(
 	session *discordgo.Session, message *discordgo.Message) *discordgo.Message {
-
 	session.Lock()
-	cachedMessage := getMessageFromHistory(message)
+	defer session.Unlock()
 
+	cachedMessage := getMessageFromHistory(message)
 	if cachedMessage != nil {
 		delete(messageHistory[message.ChannelID], message.ID)
 	}
 
-	session.Unlock()
 	return cachedMessage
 }

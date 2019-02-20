@@ -40,7 +40,7 @@ func onMessageDelete(session *discordgo.Session, message *discordgo.MessageDelet
 	if cachedMessage := popMessageFromHistory(session, message.Message); cachedMessage != nil && len(cachedMessage.Attachments) > 0 {
 
 		if targetChannel := getOutputChannel(session, message.GuildID); targetChannel != nil {
-			processDeletedMessage(session, cachedMessage, targetChannel)
+			go processDeletedMessage(session, cachedMessage, targetChannel)
 		}
 	}
 }
