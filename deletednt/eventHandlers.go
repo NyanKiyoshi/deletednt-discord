@@ -7,7 +7,6 @@ import (
 
 const statusCommand string = "?status"
 const outputChannel string = "logs"
-const mibiByte = float64(1 << 20)
 
 // onMessageCreate will be called (due to AddHandler above) every time a new
 // message is created on any channel that the authenticated bot has access to.

@@ -5,7 +5,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"runtime"
 	"time"
+	"unsafe"
 )
+
+const kibiByte = float64(1 << 10)
+const mibiByte = float64(1 << 20)
 
 var startTime = time.Now()
 
@@ -26,9 +30,10 @@ func sendBotState(session *discordgo.Session, message *discordgo.Message) {
 	runtime.ReadMemStats(&memstats)
 
 	_, _ = session.ChannelMessageSend(message.ChannelID, fmt.Sprintf(
-		"Bot Uptime: %s\nMemory Usage: %.2f MiB\nOuput Channel: %s",
+		"Bot Uptime: %s\nMemory Usage: %.2f MiB\nOutput Channel: %s\nAllocated Cache: %.3f KiB",
 		getUptime(),
 		float64(memstats.Sys)/mibiByte,
-		getOutputChannelMention(session, message.GuildID)),
-	)
+		getOutputChannelMention(session, message.GuildID),
+		float64(unsafe.Sizeof(messageHistory))/kibiByte,
+	))
 }
